@@ -1,0 +1,12 @@
+A utility for configuring an FT232RL for use on the PC-SRIC board.
+
+How to build:
+
+    make
+
+You will need the libftdi headers installed (In Fedora the
+libftdi-devel package).
+
+How to use:
+
+    ./pcsconf
