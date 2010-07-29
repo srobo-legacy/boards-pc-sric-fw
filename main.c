@@ -15,10 +15,17 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <io.h>
 
+void init( void )
+{
+	/* Tristate all pins */
+	P1DIR = P2DIR = P3DIR = P4DIR = P5DIR = P6DIR = 0;
+}
+
 int main( void )
 {
 	/* Disable the watchdog timer */
 	WDTCTL = WDTHOLD | WDTPW;
+	init();
 
 	while(1)
 	{
