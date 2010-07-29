@@ -13,25 +13,24 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
-#include <io.h>
-#include "leds.h"
+#ifndef __LEDS_H
+#define __LEDS_H
 
-void init( void )
-{
-	/* Tristate all pins */
-	P1DIR = P2DIR = P3DIR = P4DIR = P5DIR = P6DIR = 0;
+#define LED0 (1<<3)
+#define LED1 (1<<4)
+#define LEDS_BOTH (LED0 | LED1)
 
-	leds_init();
-}
+#define leds_init() do { P4OUT &= ~LEDS_BOTH;	\
+		P4DIR |= LEDS_BOTH; } while(0)
 
-int main( void )
-{
-	/* Disable the watchdog timer */
-	WDTCTL = WDTHOLD | WDTPW;
-	init();
+/* "Private" Macro -- use led0_set or led1_set instead */
+#define _led_set(x,b) do { if(x) { P4OUT |= b; }	\
+		else { P4OUT &= ~b; } } while(0)
 
-	while(1)
-	{
-		nop();
-	}
-}
+#define led0_set(x) _led_set(x, LED0)
+#define led1_set(x) _led_set(x, LED1)
+
+#define led_green(x) led0_set(x)
+#define led_red(x) led1_set(x)
+
+#endif	/* __LEDS_H */
