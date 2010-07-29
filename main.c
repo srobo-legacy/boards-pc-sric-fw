@@ -51,6 +51,8 @@ void init( void )
 
 	/* Source MCLK from XT2 */
 	xt2_boot();
+	/* Source SMCLK from XT2 */
+	BCSCTL2 |= SELS;
 }
 
 int main( void )
