@@ -33,4 +33,10 @@
 #define led_green(x) led0_set(x)
 #define led_red(x) led1_set(x)
 
+#define led0_toggle() do { P4OUT ^= LED0; } while(0)
+#define led1_toggle() do { P4OUT ^= LED1; } while(0)
+
+#define led_green_toggle() led0_toggle()
+#define led_red_toggle() led1_toggle()
+
 #endif	/* __LEDS_H */
