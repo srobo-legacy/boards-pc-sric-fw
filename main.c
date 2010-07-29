@@ -15,8 +15,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <io.h>
 #include "leds.h"
-
-#define set_field( x, val, mask ) do { x = (x & ~mask) | val; } while(0)
+#include "fields.h"
 
 /* Kick the XT2 crystal until it starts oscillating */
 void xt2_boot( void )
@@ -29,7 +28,7 @@ void xt2_boot( void )
 
 		/* Switch the XT2 osc on */
 		BCSCTL1 &= ~XT2OFF;
-		set_field( BCSCTL2, SELM_XT2CLK, SELM_3 );
+		field_set( BCSCTL2, SELM_XT2CLK, SELM_3 );
 
 		/* Clear flag to allow oscillator test */
 		IFG1 &= ~OFIFG;
