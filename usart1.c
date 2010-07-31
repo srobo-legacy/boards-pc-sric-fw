@@ -16,7 +16,11 @@
 #include "usart1.h"
 #include <io.h>
 #include <signal.h>
+#include <sys/cdefs.h>
 #include "leds.h"
+
+/* Next byte callback */
+bool (*usart1_tx_next_byte) ( uint8_t *b ) = NULL;
 
 void usart1_init( void )
 {
@@ -58,14 +62,33 @@ void usart1_init( void )
 
 interrupt (USART1TX_VECTOR) usart1_isr_tx( void )
 {
+	uint8_t b;
+
 	/* Ignore if the transmitter isn't enabled */
 	if( !(ME2 & UTXE1) )
 		return;
 
-	U1TXBUF = 'h';
+	if( usart1_tx_next_byte == NULL
+	    || !usart1_tx_next_byte(&b) )
+		/* Nothing to transmit -- disable the transmitter */
+		return;
+
+	U1TXBUF = b;
 }
 
 interrupt (USART1RX_VECTOR) usart1_isr_rx( void )
 {
 	nop();
+}
+
+void usart1_tx_start( void )
+{
+	if( ME2 & UTXE1 )
+		/* Ignore if already enabled */
+		return;
+
+	/* Enable the transmitter */
+	ME2 |= UTXE1;
+	/* Trigger an interrupt :-P */
+	IFG2 |= UTXIFG1;
 }
