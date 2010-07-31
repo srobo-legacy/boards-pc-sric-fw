@@ -14,8 +14,10 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <io.h>
+#include <signal.h>
 #include "leds.h"
 #include "fields.h"
+#include "usart1.h"
 
 /* Kick the XT2 crystal until it starts oscillating */
 void xt2_boot( void )
@@ -52,6 +54,9 @@ void init( void )
 	xt2_boot();
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
+
+	usart1_init();
+	eint();
 }
 
 int main( void )
