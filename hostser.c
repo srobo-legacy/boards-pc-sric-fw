@@ -18,7 +18,7 @@
 #include "crc16.h"
 #include <io.h>
 
-extern uint8_t hostser_txbuf[HOSTSER_BUF_SIZE];
+uint8_t hostser_txbuf[HOSTSER_BUF_SIZE];
 
 uint8_t hostser_rxbuf[HOSTSER_BUF_SIZE];
 /* Where the next byte needs to go */
