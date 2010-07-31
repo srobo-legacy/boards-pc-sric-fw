@@ -83,10 +83,6 @@ interrupt (USART1RX_VECTOR) usart1_isr_rx( void )
 
 void usart1_tx_start( void )
 {
-	if( ME2 & UTXE1 )
-		/* Ignore if already enabled */
-		return;
-
 	/* Enable the transmitter */
 	ME2 |= UTXE1;
 	/* Trigger an interrupt :-P */
