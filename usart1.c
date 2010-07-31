@@ -19,8 +19,11 @@
 #include <sys/cdefs.h>
 #include "leds.h"
 
-/* Next byte callback */
+/* Next tx byte callback */
 bool (*usart1_tx_next_byte) ( uint8_t *b ) = NULL;
+
+/* rx byte callback */
+void (*usart1_rx) ( uint8_t b ) = NULL;
 
 void usart1_init( void )
 {
@@ -78,7 +81,8 @@ interrupt (USART1TX_VECTOR) usart1_isr_tx( void )
 
 interrupt (USART1RX_VECTOR) usart1_isr_rx( void )
 {
-	nop();
+	if( usart1_rx != NULL )
+		usart1_rx( U1RXBUF );
 }
 
 void usart1_tx_start( void )

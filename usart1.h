@@ -14,4 +14,7 @@ extern bool (*usart1_tx_next_byte) ( uint8_t *b );
    Bytes to be transmitted will be picked up through the next byte callback */
 void usart1_tx_start( void );
 
+/* Callback to be presented with bytes as they're received */
+extern void (*usart1_rx) ( uint8_t b );
+
 #endif	/* __USART1_H */
