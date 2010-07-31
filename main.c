@@ -18,6 +18,7 @@
 #include "leds.h"
 #include "fields.h"
 #include "usart1.h"
+#include "hostser.h"
 
 /* Kick the XT2 crystal until it starts oscillating */
 void xt2_boot( void )
@@ -56,6 +57,7 @@ void init( void )
 	BCSCTL2 |= SELS;
 
 	usart1_init();
+	hostser_init();
 	eint();
 }
 
