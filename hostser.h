@@ -7,7 +7,11 @@
 #include "sric.h"
 
 #define HOSTSER_BUF_SIZE SRIC_TXBUF_SIZE
+/* Transmit buffer
+   All bytes except the first are escaped as they leave. */
 extern uint8_t hostser_txbuf[];
+/* Number of bytes in the transmit buffer */
+extern uint8_t hostser_txlen;
 
 void hostser_init( void );
 

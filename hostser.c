@@ -18,8 +18,14 @@
 #include "crc16.h"
 #include <io.h>
 
+/*** Transmit buffer ***/
 uint8_t hostser_txbuf[HOSTSER_BUF_SIZE];
+uint8_t hostser_txlen = 0;
 
+/* Offset of next byte to be transmitted from the tx buffer */
+static uint8_t txbuf_pos = 0;
+
+/**** Receive buffer ****/
 uint8_t hostser_rxbuf[HOSTSER_BUF_SIZE];
 /* Where the next byte needs to go */
 static uint8_t rxbuf_pos = 0;
@@ -38,7 +44,24 @@ void hostser_init( void )
 
 static bool hostser_tx_cb( uint8_t *b )
 {
-	return false;
+	static bool escape_next = false;
+
+	if( txbuf_pos == hostser_txlen )
+		return false;
+
+	*b = hostser_txbuf[txbuf_pos];
+
+	if( escape_next )
+		*b ^= 0x20;
+	/* Don't escape byte 0 (0x7E) */
+	else if( txbuf_pos != 0 && (*b == 0x7E || *b == 0x7D ) ) {
+		*b = 0x7D;
+		escape_next = true;
+		return true;
+	}
+
+	txbuf_pos++;
+	return true;
 }
 
 static void hostser_rx_cb( uint8_t b )
