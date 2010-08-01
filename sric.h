@@ -6,7 +6,9 @@
 #define MAX_PAYLOAD 64
 
 #define SRIC_TXBUF_SIZE (6 + MAX_PAYLOAD)
+#define SRIC_RXBUF_SIZE SRIC_TXBUF_SIZE
 extern uint8_t sric_txbuf[];
+extern uint8_t sric_rxbuf[];
 
 /* Offsets of fields in the tx buffer */
 enum {
@@ -51,5 +53,8 @@ bool sric_rx_avail( void );
 
 /* Transmit a response frame */
 void sric_tx_resp( void );
+
+/* Indicate that the received frame has been processed */
+void sric_rx_done( void );
 
 #endif	/* __SRIC_H */

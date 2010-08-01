@@ -16,6 +16,7 @@
 #include "sric.h"
 
 uint8_t sric_txbuf[SRIC_TXBUF_SIZE];
+uint8_t sric_rxbuf[SRIC_RXBUF_SIZE];
 
 struct {
 	/* Next byte to be transmitted */
@@ -54,6 +55,11 @@ bool sric_rx_avail( void )
 }
 
 void sric_tx_resp( void )
+{
+
+}
+
+void sric_rx_done( void )
 {
 
 }
