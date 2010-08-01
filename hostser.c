@@ -189,17 +189,6 @@ static void tx_set_crc( void )
 	hostser_txbuf[ SRIC_DATA + len + 1 ] = (c >> 8) & 0xff;
 }
 
-bool hostser_rx_avail( void )
-{
-	return hostser_state == HS_FRAME_RECEIVED;
-}
-
-void hostser_rx( void )
-{
-	while( !hostser_rx_avail() );
-	return;
-}
-
 void hostser_rx_done( void )
 {
 	fsm( EV_RX_DONE );

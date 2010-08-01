@@ -41,14 +41,6 @@ void hostser_tx( void );
 /* Returns true when the tx is busy */
 bool hostser_tx_busy( void );
 
-/* Returns true if there's a received frame */
-bool hostser_rx_avail( void );
-
-/* Blocks until a frame is received
-   hostser_rx_done must be called as soon as the received data is no longer
-   required. */
-void hostser_rx( void );
-
 /* Indicate that the received frame has been processed */
 void hostser_rx_done( void );
 
