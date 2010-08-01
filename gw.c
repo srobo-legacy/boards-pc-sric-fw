@@ -31,6 +31,10 @@ typedef enum {
 typedef enum {
 	/* Idle */
 	S_IDLE,
+	/* Transmitting the command the host sent us over sric */
+	S_SRIC_TX_CMD,
+	/* Transmitting the sric response to the host */
+	S_HOST_TX_RESP,
 } state_t;
 
 static state_t gw_state = S_IDLE;
@@ -44,7 +48,46 @@ static void gw_fsm( gw_event_t event )
 {
 	switch( gw_state ) {
 	case S_IDLE:
+		/* Idling away, plotting our revenge */
+		if( event == EV_HOST_RX ) {
+			uint8_t i;
+			/* Transmit frame on SRIC */
+			for( i=0;
+			     i<(hostser_rxbuf[SRIC_LEN] + SRIC_HEADER_SIZE);
+			     i++ )
+				sric_txbuf[i] = hostser_rxbuf[i];
+
+			sric_tx();
+			gw_state = S_SRIC_TX_CMD;
+		}
+		else if( event == EV_SRIC_RX ) {
+			/* TODO -- Process commands from SRIC side */
+		}
 		break;
+
+	case S_SRIC_TX_CMD:
+		/* Waiting for the SRIC client to get back to us */
+		if( event == EV_SRIC_RX ) {
+			uint8_t i;
+			/* Response received on SRIC */
+			/* Transmit it to the host */
+			for( i=0;
+			     i<(sric_rxbuf[SRIC_LEN] + SRIC_HEADER_SIZE);
+			     i++ )
+				hostser_txbuf[i] = sric_rxbuf[i];
+
+			hostser_tx();
+			gw_state = S_HOST_TX_RESP;
+		}
+
+	case S_HOST_TX_RESP:
+		/* Transmitting the SRIC response  */
+		if( event == EV_HOST_TX_COMPLETE ) {
+			/* We're done with everything */
+			hostser_rx_done();
+			sric_rx_done();
+			gw_state = S_IDLE;
+		}
 
 	default:
 		break;
