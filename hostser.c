@@ -136,20 +136,20 @@ void hostser_rx_cb( uint8_t b )
 		rxbuf_pos = 0;
 }
 
-static void fsm( hs_event_t flag )
+static void fsm( hs_event_t event )
 {
 	switch( hostser_state )	{
 	case HS_IDLE:
 		/* Nothing's currently happening */
 
-		if( flag == EV_RX_FRAME_RECEIVED ) {
+		if( event == EV_RX_FRAME_RECEIVED ) {
 			/* Received a frame, wait for someone to do something with it */
 			hostser_state = HS_FRAME_RECEIVED;
 
 			if( hostser_conf.rx_cb != NULL )
 				hostser_conf.rx_cb();
 
-		} else if( flag == EV_TX_QUEUED ) {
+		} else if( event == EV_TX_QUEUED ) {
 			txbuf_pos = 0;
 			hostser_conf.usart_tx_start( hostser_conf.usart_tx_start_n );
 
@@ -162,7 +162,7 @@ static void fsm( hs_event_t flag )
 		/* A frame has been received */
 		/* Stay in this state until we can throw it away.  */
 
-		if( flag == EV_RX_DONE )
+		if( event == EV_RX_DONE )
 			hostser_state = HS_IDLE;
 
 		break;
@@ -171,7 +171,7 @@ static void fsm( hs_event_t flag )
 		/* A frame is currently transmitting */
 		/* Waiting for that operation to complete */
 
-		if( flag == EV_TX_DONE )
+		if( event == EV_TX_DONE )
 			hostser_state = HS_IDLE;
 		break;
 
