@@ -28,7 +28,7 @@ enum {
 
 #define sric_addr_set_ack(x) (x | 0x80)
 #define sric_addr_is_ack(x) ( x & 0x80 )
-#define sric_frame_is_ack(buf) ( sric_addr_is_ack(buf[SRIC_DATA]) )
+#define sric_frame_is_ack(buf) ( sric_addr_is_ack(buf[SRIC_DEST]) )
 
 /* Initialise the internal goo */
 void sric_init( void );
