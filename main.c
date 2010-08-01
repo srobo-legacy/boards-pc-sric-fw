@@ -20,6 +20,7 @@
 #include "fields.h"
 #include "usart.h"
 #include "hostser.h"
+#include "gw.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -52,7 +53,7 @@ const usart_t usart_config[2] = {
 const hostser_conf_t hostser_conf = {
 	.usart_tx_start = usart_tx_start,
 	.usart_tx_start_n = 1,
-	.rx_cb = NULL,
+	.rx_cb = gw_hostser_rx,
 };
 
 /* Kick the XT2 crystal until it starts oscillating */
