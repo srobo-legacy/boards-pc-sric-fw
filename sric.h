@@ -17,6 +17,19 @@ enum {
 	/* CRC is last two bytes */
 };
 
+/* The number of bytes in a SRIC header */
+#define SRIC_HEADER_SIZE 4
+
+/* The number of bytes in the header and footer of a SRIC frame */
+#define SRIC_OVERHEAD (SRIC_HEADER_SIZE + 2)
+
+/* Our SRIC address */
+#define SRIC_ADDRESS 1
+
+#define sric_addr_set_ack(x) (x | 0x80)
+#define sric_addr_is_ack(x) ( x & 0x80 )
+#define sric_frame_is_ack(buf) ( sric_addr_is_ack(buf[SRIC_DATA]) )
+
 /* Initialise the internal goo */
 void sric_init( void );
 
