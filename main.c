@@ -15,10 +15,44 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <io.h>
 #include <signal.h>
+#include <sys/cdefs.h>
 #include "leds.h"
 #include "fields.h"
-#include "usart1.h"
+#include "usart.h"
 #include "hostser.h"
+
+const usart_t usart_config[2] = {
+	{
+		.tx_gen_byte = NULL,
+		.rx_byte = NULL,
+		.br0 = 0,
+		.br1 = 0,
+		.mctl = 0,
+		.sel_rx = NULL,
+		.sel_tx = NULL,
+	},
+
+	{
+		.tx_gen_byte = hostser_tx_cb,
+		.rx_byte = hostser_rx_cb,
+
+		/* 115200 baud -- values from
+		   http://mspgcc.sourceforge.net/baudrate.html */
+		.br0 = 0x45,
+		.br1 = 0x00,
+		.mctl = 0xAA,
+
+		.sel_rx = &P3SEL,
+		.sel_tx = &P3SEL,
+		.sel_rx_num = 7,
+		.sel_tx_num = 6,
+	}
+};
+
+const hostser_conf_t hostser_conf = {
+	.usart_tx_start = usart_tx_start,
+	.usart_tx_start_n = 1
+};
 
 /* Kick the XT2 crystal until it starts oscillating */
 void xt2_boot( void )
@@ -56,7 +90,7 @@ void init( void )
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
 
-	usart1_init();
+	usart_init();
 	hostser_init();
 	eint();
 }

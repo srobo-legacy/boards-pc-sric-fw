@@ -13,7 +13,22 @@ extern uint8_t hostser_txbuf[];
 /* Number of bytes in the transmit buffer */
 extern uint8_t hostser_txlen;
 
+/* An instance of this struct must be linked in, and named
+   hostser_conf.  Should be const. */
+typedef struct {
+	/* Function to be called to start the USART transmitting */
+	void (*usart_tx_start) (uint8_t n);
+
+	/* n to pass to the start function */
+	uint8_t usart_tx_start_n;
+} hostser_conf_t;
+
 void hostser_init( void );
+
+/* Transmit byte generator */
+bool hostser_tx_cb( uint8_t *b );
+/* Callback for each byte received */
+void hostser_rx_cb( uint8_t b );
 
 /* Request that the given frame is transmitted
    Sorts out CRC.

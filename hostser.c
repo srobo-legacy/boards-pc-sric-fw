@@ -14,9 +14,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "hostser.h"
-#include "usart1.h"
 #include "crc16.h"
 #include <io.h>
+
+/* Linked in elsewhere */
+extern const hostser_conf_t hostser_conf;
 
 /*** Transmit buffer ***/
 uint8_t hostser_txbuf[HOSTSER_BUF_SIZE];
@@ -29,12 +31,6 @@ static uint8_t txbuf_pos = 0;
 uint8_t hostser_rxbuf[HOSTSER_BUF_SIZE];
 /* Where the next byte needs to go */
 static uint8_t rxbuf_pos = 0;
-
-/* Returns the next byte to be transmitted */
-static bool hostser_tx_cb( uint8_t *b );
-
-/* Data is handed to this from USART1 */
-static void hostser_rx_cb( uint8_t b );
 
 /* Events that the state machine responds to */
 typedef enum {
@@ -67,11 +63,9 @@ static volatile enum {
 
 void hostser_init( void )
 {
-	usart1_tx_next_byte = hostser_tx_cb;
-	usart1_rx = hostser_rx_cb;
 }
 
-static bool hostser_tx_cb( uint8_t *b )
+bool hostser_tx_cb( uint8_t *b )
 {
 	static bool escape_next = false;
 
@@ -94,7 +88,7 @@ static bool hostser_tx_cb( uint8_t *b )
 	return true;
 }
 
-static void hostser_rx_cb( uint8_t b )
+void hostser_rx_cb( uint8_t b )
 {
 	static bool escape_next = false;
 	uint8_t len;
@@ -155,7 +149,7 @@ static void fsm( hs_event_t flag )
 
 			hostser_txlen = SRIC_OVERHEAD;
 			txbuf_pos = 0;
-			usart1_tx_start();
+			hostser_conf.usart_tx_start( hostser_conf.usart_tx_start_n );
 			hostser_state = HS_FRAME_RECEIVED;
 
 		} else if ( flag == EV_TX_LOCKREQ )
@@ -172,7 +166,7 @@ static void fsm( hs_event_t flag )
 	case HS_TX_LOCKED:
 		if( flag == EV_TX_QUEUED ) {
 			txbuf_pos = 0;
-			usart1_tx_start();
+			hostser_conf.usart_tx_start( hostser_conf.usart_tx_start_n );
 
 			hostser_state = HS_TX_WAIT_ACK;
 		}
