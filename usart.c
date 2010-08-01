@@ -114,8 +114,7 @@ void usart_init()
 		/* URXWIE = 0 : All received bytes trigger interrupt */
 		*(r->RCTL) = 0;
 
-		/* Set baud to 115200 -- values from 
-		   http://mspgcc.sourceforge.net/baudrate.html */
+		/* Configure baud rate */
 		*(r->BR0) = conf->br0;
 		*(r->BR1) = conf->br1;
 		*(r->MCTL) = conf->mctl;
