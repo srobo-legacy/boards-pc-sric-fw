@@ -47,6 +47,7 @@ static bool hostser_tx_cb( uint8_t *b )
 	static bool escape_next = false;
 
 	if( txbuf_pos == hostser_txlen )
+		/* Transmission complete */
 		return false;
 
 	*b = hostser_txbuf[txbuf_pos];
