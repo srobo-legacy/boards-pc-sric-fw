@@ -12,6 +12,8 @@
 extern uint8_t hostser_txbuf[];
 /* Number of bytes in the transmit buffer */
 extern uint8_t hostser_txlen;
+/* Receive buffer */
+extern uint8_t hostser_rxbuf[];
 
 /* An instance of this struct must be linked in, and named
    hostser_conf.  Should be const. */
