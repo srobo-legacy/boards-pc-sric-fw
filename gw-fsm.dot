@@ -1,0 +1,29 @@
+digraph G {
+	IDLE:w -> A [label="Command from host"];
+	IDLE -> D [label="Command from SRIC"];
+	{ rank = same; IDLE; }
+
+	subgraph cluster0 {
+		color = "white";
+		A:s -> B:n [label="Response from SRIC"];
+		A:w -> C [label="Command from host",color="#999999",fontcolor="#999999"];
+		C -> B [label="Response from SRIC",color="#999999",fontcolor="#999999"];
+		B:e -> IDLE:sw [label="Transmit complete"];
+	}
+
+	subgraph cluster1 {
+		color = "white";
+
+		D -> E [label="Response from host"];
+		E -> IDLE [label="Transmit complete"];
+	}
+
+	{ rank = same; A; D; }
+
+	A [label="Transmit ACK to host\nTransmit command on SRIC"];
+	B [label="Transmit response to host"];
+	C [label="Transmit ACK to host\n(Host failed to receive ACK)",color="#999999",fontcolor="#999999"];
+
+	D [label="Transmit command to host"];
+	E [label="Transmit response on SRIC"];
+}

@@ -10,6 +10,9 @@ C_FILES = main.c sric.c hostser.c crc16.c usart.c
 pcs: ${H_FILES} ${C_FILES}
 	${CC} -o $@ ${C_FILES} ${CFLAGS} ${LDFLAGS}
 
+gw-fsm.pdf: gw-fsm.dot
+	dot -Tpdf gw-fsm.dot -o gw-fsm.pdf
+
 .PHONY: clean
 
 clean:
