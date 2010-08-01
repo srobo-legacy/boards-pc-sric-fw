@@ -34,26 +34,6 @@ void sric_tx( void )
 
 }
 
-bool sric_tx_isbusy( void )
-{
-	return false;
-}
-
-bool sric_resp_avail( void )
-{
-	return false;
-}
-
-void sric_txrx( void )
-{
-
-}
-
-bool sric_rx_avail( void )
-{
-	return false;
-}
-
 void sric_tx_resp( void )
 {
 

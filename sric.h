@@ -38,19 +38,6 @@ void sric_init( void );
 /* Begin transmission of the frame in the tx buffer */
 void sric_tx( void );
 
-/* Returns true when it is safe to fiddle with the tx buffer */
-bool sric_tx_isbusy( void );
-
-/* Returns true when  */
-bool sric_resp_avail( void );
-
-/* Transmit the frame in the tx buffer,
-   and return when the response has been received. */
-void sric_txrx( void );
-
-/* Returns true when a frame has been received */
-bool sric_rx_avail( void );
-
 /* Transmit a response frame */
 void sric_tx_resp( void );
 
