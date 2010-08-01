@@ -7,7 +7,6 @@ digraph G {
 		color = "white";
 		A -> A0 [label="ACK TX complete"];
 		A0 -> B [label="Response from SRIC"];
-		A:w -> A:w [label="Command from host\n(Host failed to receive ACK)",color="#999999",fontcolor="#999999"];
 
 		A0:w -> C [label="Command from host\n(Host failed to receive ACK)",color="#999999",fontcolor="#999999"];
 		C -> B [label="Response from SRIC",color="#999999",fontcolor="#999999"];
