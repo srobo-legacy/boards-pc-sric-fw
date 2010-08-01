@@ -51,7 +51,8 @@ const usart_t usart_config[2] = {
 
 const hostser_conf_t hostser_conf = {
 	.usart_tx_start = usart_tx_start,
-	.usart_tx_start_n = 1
+	.usart_tx_start_n = 1,
+	.rx_cb = NULL,
 };
 
 /* Kick the XT2 crystal until it starts oscillating */

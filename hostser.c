@@ -16,6 +16,7 @@
 #include "hostser.h"
 #include "crc16.h"
 #include <io.h>
+#include <sys/cdefs.h>
 
 /* Linked in elsewhere */
 extern const hostser_conf_t hostser_conf;
@@ -144,6 +145,9 @@ static void fsm( hs_event_t flag )
 		if( flag == EV_RX_FRAME_RECEIVED ) {
 			/* Received a frame, wait for someone to do something with it */
 			hostser_state = HS_FRAME_RECEIVED;
+
+			if( hostser_conf.rx_cb != NULL )
+				hostser_conf.rx_cb();
 
 		} else if( flag == EV_TX_QUEUED ) {
 			txbuf_pos = 0;

@@ -21,6 +21,9 @@ typedef struct {
 
 	/* n to pass to the start function */
 	uint8_t usart_tx_start_n;
+
+	/* Called when a frame has been received and is in the receive buffer */
+	void (*rx_cb) ( void );
 } hostser_conf_t;
 
 void hostser_init( void );
