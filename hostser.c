@@ -139,6 +139,8 @@ static void fsm( hs_event_t flag )
 {
 	switch( hostser_state )	{
 	case HS_IDLE:
+		/* Nothing's currently happening */
+
 		if( flag == EV_RX_FRAME_RECEIVED ) {
 			/* Transmit ACK to host */
 			hostser_txbuf[0] = 0x7E;
@@ -158,12 +160,18 @@ static void fsm( hs_event_t flag )
 		break;
 
 	case HS_FRAME_RECEIVED:
+		/* A frame has been received */
+		/* Stay in this state until we can throw it away.  */
+
 		if( flag == EV_RX_DONE )
 			hostser_state = HS_IDLE;
 
 		break;
 
 	case HS_TX_LOCKED:
+		/* The transmit buffer is being filled up by something else */
+		/* Stay in this state until we can use the transmit buffer again */
+
 		if( flag == EV_TX_QUEUED ) {
 			txbuf_pos = 0;
 			hostser_conf.usart_tx_start( hostser_conf.usart_tx_start_n );
@@ -173,6 +181,8 @@ static void fsm( hs_event_t flag )
 		break;
 
 	case HS_TX_WAIT_ACK:
+		/* Waiting for an ACK back about the frame that we just transmitted */
+
 		if( flag == EV_RX_FRAME_RECEIVED ) {
 			/* If it's not an ACK, then we can only assume
 			   that the host received our frame, and the ACK failed to 
