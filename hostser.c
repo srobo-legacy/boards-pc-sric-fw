@@ -36,6 +36,31 @@ static bool hostser_tx_cb( uint8_t *b );
 /* Data is handed to this from USART1 */
 static void hostser_rx_cb( uint8_t b );
 
+/* Events that the state machine responds to */
+typedef enum {
+	/* A frame has been received */
+	EV_RX_FRAME_RECEIVED,
+	/* The 'user' has finished with the received frame */
+	EV_RX_DONE,
+	/* A frame has been queued for transmission */
+	EV_TX_QUEUED,
+} hs_event_t;
+
+/* State machine that manages the host interface */
+static void fsm( hs_event_t flag );
+
+/* Set crc in transmit buffer */
+static void tx_set_crc( void );
+
+static volatile enum {
+	/* Nothing's happening */
+	HS_IDLE,
+	/* A frame has been received and is being processed by the user */
+	HS_FRAME_RECEIVED,
+	/* Waiting for an ACK back from the host */
+	HS_TX_WAIT_ACK,
+} hostser_state = HS_IDLE;
+
 void hostser_init( void )
 {
 	usart1_tx_next_byte = hostser_tx_cb;
@@ -106,8 +131,102 @@ static void hostser_rx_cb( uint8_t b )
 
 	if( crc == recv_crc ) {
 		/* We have a valid frame :-O */
-		nop();
+		fsm( EV_RX_FRAME_RECEIVED );
 	} else
 		/* CRC's invalid -- throw it away */
 		rxbuf_pos = 0;
+}
+
+static void fsm( hs_event_t flag )
+{
+	switch( hostser_state )	{
+	case HS_IDLE:
+		if( flag == EV_RX_FRAME_RECEIVED ) {
+			/* Transmit ACK to host */
+			hostser_txbuf[0] = 0x7E;
+			hostser_txbuf[SRIC_DEST] = sric_addr_ack(1);
+			hostser_txbuf[SRIC_SRC] = SRIC_ADDRESS;
+			hostser_txbuf[SRIC_LEN] = 0;
+			tx_set_crc();
+
+			hostser_txlen = SRIC_OVERHEAD;
+			txbuf_pos = 0;
+			usart1_tx_start();
+			hostser_state = HS_FRAME_RECEIVED;
+
+		} else if( flag == EV_TX_QUEUED ) {
+			txbuf_pos = 0;
+			usart1_tx_start();
+
+			hostser_state = HS_TX_WAIT_ACK;
+		}
+
+		break;
+
+	case HS_FRAME_RECEIVED:
+		if( flag == EV_RX_DONE )
+			hostser_state = HS_IDLE;
+
+		break;
+
+	case HS_TX_WAIT_ACK:
+		if( flag == EV_RX_FRAME_RECEIVED ) {
+			/* If it's not an ACK, then we can only assume
+			   that the host received our frame, and the ACK failed to 
+			   reach us -- process the frame from the IDLE state */
+			if( !sric_frame_is_ack(hostser_rxbuf) ) {
+				hostser_state = HS_IDLE;
+				fsm( EV_RX_FRAME_RECEIVED );
+			} else
+				hostser_state = HS_IDLE;
+		}
+		/* TODO: Timeout and retransmit */
+		break;
+
+	default:
+		break;
+	}
+}
+
+static void tx_set_crc( void )
+{
+	uint8_t len = hostser_txbuf[SRIC_LEN];
+	uint16_t c = crc16( hostser_txbuf, SRIC_HEADER_SIZE + len );
+
+	hostser_txbuf[ SRIC_DATA + len ] = c & 0xff;
+	hostser_txbuf[ SRIC_DATA + len + 1 ] = (c >> 8) & 0xff;
+}
+
+bool hostser_rx_avail( void )
+{
+	return hostser_state == HS_FRAME_RECEIVED;
+}
+
+void hostser_rx( void )
+{
+	while( !hostser_rx_avail() );
+	return;
+}
+
+void hostser_rx_done( void )
+{
+	fsm( EV_RX_DONE );
+}
+
+bool hostser_tx_busy( void )
+{
+	return hostser_state == HS_IDLE;
+}
+
+void hostser_tx( void )
+{
+	if( hostser_tx_busy() ) {
+		/* Panic :-O This must never happen*/
+		while(1);
+	}
+
+	tx_set_crc();
+	hostser_txlen = SRIC_OVERHEAD + hostser_txbuf[ SRIC_LEN ];
+
+	fsm( EV_TX_QUEUED );
 }

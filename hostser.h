@@ -15,14 +15,23 @@ extern uint8_t hostser_txlen;
 
 void hostser_init( void );
 
+/* Request that the given frame is transmitted
+   Sorts out CRC.
+   Must be called when the interface is idle. */
 void hostser_tx( void );
 
 /* Returns true when the tx is busy */
 bool hostser_tx_busy( void );
 
+/* Returns true if there's a received frame */
 bool hostser_rx_avail( void );
 
-/* Blocks until  */
+/* Blocks until a frame is received
+   hostser_rx_done must be called as soon as the received data is no longer
+   required. */
 void hostser_rx( void );
+
+/* Indicate that the received frame has been processed */
+void hostser_rx_done( void );
 
 #endif	/* __HOSTSER_H */
