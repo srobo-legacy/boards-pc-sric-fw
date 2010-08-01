@@ -171,8 +171,12 @@ static void fsm( hs_event_t event )
 		/* A frame is currently transmitting */
 		/* Waiting for that operation to complete */
 
-		if( event == EV_TX_DONE )
+		if( event == EV_TX_DONE ) {
 			hostser_state = HS_IDLE;
+
+			if( hostser_conf.tx_done_cb != NULL )
+				hostser_conf.tx_done_cb();
+		}
 		break;
 
 	default:

@@ -56,6 +56,11 @@ void gw_hostser_rx( void )
 	gw_fsm( EV_HOST_RX );
 }
 
+void gw_hostser_tx_done( void )
+{
+	gw_fsm( EV_HOST_TX_COMPLETE );
+}
+
 void gw_sric_rx( void )
 {
 	gw_fsm( EV_SRIC_RX );

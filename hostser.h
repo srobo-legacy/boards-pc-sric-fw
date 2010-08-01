@@ -24,6 +24,9 @@ typedef struct {
 
 	/* Called when a frame has been received and is in the receive buffer */
 	void (*rx_cb) ( void );
+
+	/* Called when transmission of a frame has completed */
+	void (*tx_done_cb) ( void );
 } hostser_conf_t;
 
 void hostser_init( void );
