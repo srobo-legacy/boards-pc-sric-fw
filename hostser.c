@@ -144,7 +144,7 @@ static void fsm( hs_event_t flag )
 		if( flag == EV_RX_FRAME_RECEIVED ) {
 			/* Transmit ACK to host */
 			hostser_txbuf[0] = 0x7E;
-			hostser_txbuf[SRIC_DEST] = sric_addr_ack(1);
+			hostser_txbuf[SRIC_DEST] = sric_addr_set_ack(1);
 			hostser_txbuf[SRIC_SRC] = SRIC_ADDRESS;
 			hostser_txbuf[SRIC_LEN] = 0;
 			tx_set_crc();
