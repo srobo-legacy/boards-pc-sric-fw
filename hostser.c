@@ -42,6 +42,8 @@ typedef enum {
 	EV_RX_FRAME_RECEIVED,
 	/* The 'user' has finished with the received frame */
 	EV_RX_DONE,
+	/* A lock has been requested on the transmit buffer */
+	EV_TX_LOCKREQ,
 	/* A frame has been queued for transmission */
 	EV_TX_QUEUED,
 } hs_event_t;
@@ -59,6 +61,8 @@ static volatile enum {
 	HS_FRAME_RECEIVED,
 	/* Waiting for an ACK back from the host */
 	HS_TX_WAIT_ACK,
+	/* The output buffer has been locked by the 'user' */
+	HS_TX_LOCKED,
 } hostser_state = HS_IDLE;
 
 void hostser_init( void )
@@ -154,12 +158,8 @@ static void fsm( hs_event_t flag )
 			usart1_tx_start();
 			hostser_state = HS_FRAME_RECEIVED;
 
-		} else if( flag == EV_TX_QUEUED ) {
-			txbuf_pos = 0;
-			usart1_tx_start();
-
-			hostser_state = HS_TX_WAIT_ACK;
-		}
+		} else if ( flag == EV_TX_LOCKREQ )
+			hostser_state = HS_TX_LOCKED;
 
 		break;
 
@@ -167,6 +167,15 @@ static void fsm( hs_event_t flag )
 		if( flag == EV_RX_DONE )
 			hostser_state = HS_IDLE;
 
+		break;
+
+	case HS_TX_LOCKED:
+		if( flag == EV_TX_QUEUED ) {
+			txbuf_pos = 0;
+			usart1_tx_start();
+
+			hostser_state = HS_TX_WAIT_ACK;
+		}
 		break;
 
 	case HS_TX_WAIT_ACK:
@@ -220,8 +229,9 @@ bool hostser_tx_busy( void )
 
 void hostser_tx( void )
 {
-	if( hostser_tx_busy() ) {
-		/* Panic :-O This must never happen*/
+	if( hostser_state != HS_TX_LOCKED
+	    || hostser_tx_busy() ) {
+		/* Panic :-O These things must never happen*/
 		while(1);
 	}
 
@@ -229,4 +239,11 @@ void hostser_tx( void )
 	hostser_txlen = SRIC_OVERHEAD + hostser_txbuf[ SRIC_LEN ];
 
 	fsm( EV_TX_QUEUED );
+}
+
+void hostser_tx_lock( void )
+{
+	/* Repeatedly try to get the lock */
+	while( hostser_state != HS_TX_LOCKED )
+		fsm( EV_TX_LOCKREQ );
 }

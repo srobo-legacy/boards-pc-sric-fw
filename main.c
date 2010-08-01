@@ -69,6 +69,9 @@ int main( void )
 
 	while(1)
 	{
+		hostser_rx();
+		nop();
+		hostser_rx_done();
 		nop();
 	}
 }
