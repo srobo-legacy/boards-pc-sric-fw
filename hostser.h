@@ -32,16 +32,11 @@ void hostser_rx_cb( uint8_t b );
 
 /* Request that the given frame is transmitted
    Sorts out CRC.
-   Must be called when the interface is locked. */
+   Must be called when the tx is not busy. */
 void hostser_tx( void );
 
 /* Returns true when the tx is busy */
 bool hostser_tx_busy( void );
-
-/* Lock the output buffer.
-   Allows the transmit buffer to be modified.
-   The interface can't do anything until hostser_tx is called. */
-void hostser_tx_lock( void );
 
 /* Returns true if there's a received frame */
 bool hostser_rx_avail( void );
