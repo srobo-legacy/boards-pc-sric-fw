@@ -29,6 +29,16 @@ void sric_init( void )
 
 }
 
+bool sric_tx_cb( uint8_t *b )
+{
+	return false;
+}
+
+void sric_rx_cb( uint8_t b )
+{
+
+}
+
 void sric_tx( void )
 {
 

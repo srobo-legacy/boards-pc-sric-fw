@@ -21,16 +21,23 @@
 #include "usart.h"
 #include "hostser.h"
 #include "gw.h"
+#include "sric.h"
 
 const usart_t usart_config[2] = {
 	{
-		.tx_gen_byte = NULL,
-		.rx_byte = NULL,
-		.br0 = 0,
-		.br1 = 0,
-		.mctl = 0,
-		.sel_rx = NULL,
-		.sel_tx = NULL,
+		.tx_gen_byte = sric_tx_cb,
+		.rx_byte = sric_rx_cb,
+
+		/* 115200 baud -- values from
+		   http://mspgcc.sourceforge.net/baudrate.html */
+		.br0 = 0x45,
+		.br1 = 0x00,
+		.mctl = 0xAA,
+
+		.sel_rx = &P3SEL,
+		.sel_tx = &P3SEL,
+		.sel_rx_num = 5,
+		.sel_tx_num = 4,
 	},
 
 	{

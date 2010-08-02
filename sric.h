@@ -35,6 +35,11 @@ enum {
 /* Initialise the internal goo */
 void sric_init( void );
 
+/* Transmit byte generator */
+bool sric_tx_cb( uint8_t *b );
+/* Callback for each byte received */
+void sric_rx_cb( uint8_t b );
+
 /* Begin transmission of the frame in the tx buffer */
 void sric_tx( void );
 
