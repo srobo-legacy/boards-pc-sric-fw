@@ -22,6 +22,7 @@
 #include "hostser.h"
 #include "gw.h"
 #include "sric.h"
+#include "smps.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -100,6 +101,7 @@ void init( void )
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
 
+	smps_init();
 	usart_init();
 	hostser_init();
 	eint();
@@ -110,6 +112,8 @@ int main( void )
 	/* Disable the watchdog timer */
 	WDTCTL = WDTHOLD | WDTPW;
 	init();
+
+	smps_enable();
 
 	while(1)
 	{
