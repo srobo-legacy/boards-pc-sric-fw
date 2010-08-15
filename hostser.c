@@ -76,10 +76,12 @@ bool hostser_tx_cb( uint8_t *b )
 
 	*b = hostser_txbuf[txbuf_pos];
 
-	if( escape_next )
+	if( escape_next ) {
 		*b ^= 0x20;
+		escape_next = false;
+
 	/* Don't escape byte 0 (0x7E) */
-	else if( txbuf_pos != 0 && (*b == 0x7E || *b == 0x7D ) ) {
+	} else if( txbuf_pos != 0 && (*b == 0x7E || *b == 0x7D ) ) {
 		*b = 0x7D;
 		escape_next = true;
 		return true;
