@@ -4,11 +4,20 @@ CC := msp430-gcc
 CFLAGS := -g -mmcu=${ARCH} -Wall -O3
 LDFLAGS :=
 
-H_FILES = leds.h fields.h sric.h hostser.h crc16.h usart.h gw.h smps.h sric-mux.h
-C_FILES = main.c sric.c hostser.c crc16.c usart.c gw.c smps.c sric-mux.c
+O_FILES = main.o sric.o hostser.o crc16.o usart.o gw.o smps.o sric-mux.o
 
-pcs: ${H_FILES} ${C_FILES}
-	${CC} -o $@ ${C_FILES} ${CFLAGS} ${LDFLAGS}
+all: pcs
+
+include depend
+
+pcs: ${O_FILES}
+	${CC} -o $@ ${O_FILES} ${CFLAGS} ${LDFLAGS}
+
+depend: *.c
+	rm -f depend
+	for file in $^; do \
+		${CC} ${CFLAGS} -MM $$file -o - >> $@ ; \
+	done ;
 
 gw-fsm.pdf: gw-fsm.dot
 	dot -Tpdf gw-fsm.dot -o gw-fsm.pdf
@@ -16,5 +25,5 @@ gw-fsm.pdf: gw-fsm.dot
 .PHONY: clean
 
 clean:
-	-rm -f pcs
+	-rm -f pcs depend *.o
 

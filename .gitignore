@@ -1,2 +1,4 @@
 pcs
 gw-fsm.pdf
+*.o
+depend
