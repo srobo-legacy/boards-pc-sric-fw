@@ -108,6 +108,7 @@ void init( void )
 	smps_init();
 	usart_init();
 	hostser_init();
+	sric_init();
 	eint();
 }
 
