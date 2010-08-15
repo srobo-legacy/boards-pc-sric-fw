@@ -66,6 +66,12 @@ const hostser_conf_t hostser_conf = {
 	.tx_done_cb = gw_hostser_tx_done,
 };
 
+const sric_conf_t sric_conf = {
+	.usart_tx_start = usart_tx_start,
+	.usart_rx_gate = usart_rx_gate,
+	.usart_n = 0,
+};
+
 /* Kick the XT2 crystal until it starts oscillating */
 void xt2_boot( void )
 {
