@@ -109,7 +109,7 @@ void hostser_rx_cb( uint8_t b )
 	}
 			
 	/* End of buffer :/ */
-	if( rxbuf_pos == HOSTSER_BUF_SIZE )
+	if( rxbuf_pos >= HOSTSER_BUF_SIZE )
 		return;
 
 	hostser_rxbuf[rxbuf_pos] = b;
