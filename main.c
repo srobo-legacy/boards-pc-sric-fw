@@ -23,6 +23,7 @@
 #include "gw.h"
 #include "sric.h"
 #include "smps.h"
+#include "sric-mux.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -100,6 +101,9 @@ void init( void )
 	xt2_boot();
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
+
+	/* Default to master mode */
+	sric_mux_master();
 
 	smps_init();
 	usart_init();
