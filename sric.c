@@ -14,6 +14,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "sric.h"
+#include <io.h>
 
 uint8_t sric_txbuf[SRIC_TXBUF_SIZE];
 uint8_t sric_rxbuf[SRIC_RXBUF_SIZE];
@@ -24,9 +25,14 @@ struct {
 	
 } tx;
 
+#define SRIC_TXEN (1<<0)
+#define lvds_tx_en() do { P3OUT |= SRIC_TXEN; } while(0)
+#define lvds_tx_dis() do { P3OUT &= ~SRIC_TXEN; } while(0)
+
 void sric_init( void )
 {
-
+	lvds_tx_dis();
+	P3DIR |= SRIC_TXEN;
 }
 
 bool sric_tx_cb( uint8_t *b )
