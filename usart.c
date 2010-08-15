@@ -193,3 +193,13 @@ USART_RX_ISR(0, USART0RX_VECTOR);
 USART_TX_ISR(1, USART1TX_VECTOR);
 USART_RX_ISR(1, USART1RX_VECTOR);
 #endif
+
+void usart_rx_gate( uint8_t n, bool en )
+{
+	const usart_regs_t *r = regs + n;
+
+	if(en)
+		*(r->ME) |= r->me_mask_rx;
+	else
+		*(r->ME) &= ~(r->me_mask_rx);
+}

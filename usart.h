@@ -42,4 +42,7 @@ void usart_init();
    Bytes to be transmitted will be picked up through the next-byte callback. */
 void usart_tx_start( uint8_t n );
 
+/* Enable/disable the receiver -- pass true for enabled */
+void usart_rx_gate( uint8_t n, bool en );
+
 #endif	/* __USART_H */
