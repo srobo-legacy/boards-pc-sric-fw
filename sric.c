@@ -52,6 +52,8 @@ static volatile enum {
 	S_TX,
 	/* Waiting for response */
 	S_WAIT_RESP,
+	/* Transmitting response */
+	S_TX_RESP,
 } state;
 
 static void fsm( event_t ev );
@@ -75,6 +77,16 @@ static void fsm( event_t ev )
 			sric_conf.usart_rx_gate(sric_conf.usart_n, false);
 
 			state = S_TX_LOCKED;
+		} else if(ev == EV_RX) {
+			/* Received a frame */
+			/* TODO */
+
+			/* Start transmitting response */
+			lvds_tx_en();
+			tx.out_pos = 0;
+			sric_conf.usart_tx_start(sric_conf.usart_n);
+
+			state = S_TX_RESP;
 		}
 		break;
 
@@ -98,18 +110,26 @@ static void fsm( event_t ev )
 			lvds_tx_dis();
 			sric_conf.usart_rx_gate(sric_conf.usart_n, true);
 
-			/* TODO: state = S_WAIT_RESP; */
-			state = S_IDLE;
+			state = S_WAIT_RESP;
 		}
 		break;
 
 	case S_WAIT_RESP:
 		/* Waiting for a response */
 		if(ev == EV_RX) {
-
+			/* TODO: Call callback */
+			state = S_IDLE;
 		}
 		break;
 
+	case S_TX_RESP:
+		/* Transmitting response frame */
+		if(ev == EV_TX_DONE ) {
+			lvds_tx_dis();
+			sric_conf.usart_rx_gate(sric_conf.usart_n, true);
+
+			state = S_IDLE;
+		}
 
 	default:
 		state = S_IDLE;
@@ -185,8 +205,7 @@ void sric_rx_cb( uint8_t b )
 
 	if( crc == recv_crc ) {
 		/* We have a valid frame :-O */
-		/* fsm( EV_RX ); */
-		nop();
+		fsm( EV_RX );
 	} else
 		/* CRC's invalid -- throw it away */
 		rxbuf_pos = 0;
