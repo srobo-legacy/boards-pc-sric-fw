@@ -16,6 +16,7 @@
 #include "sric.h"
 #include <io.h>
 #include "crc16.h"
+#include "config.h"
 
 uint8_t sric_txbuf[SRIC_TXBUF_SIZE];
 uint8_t sric_txlen;
@@ -29,6 +30,7 @@ uint8_t sric_rxbuf[SRIC_RXBUF_SIZE];
 static uint8_t rxbuf_pos;
 
 extern const sric_conf_t sric_conf;
+uint8_t sric_addr;
 
 /* Events that trigger state changes */
 typedef enum {
@@ -64,6 +66,12 @@ static void fsm( event_t ev );
 
 void sric_init( void )
 {
+	if( SRIC_DIRECTOR ) {
+		sric_addr = 1;
+	} else {
+		sric_addr = 0;
+	}
+
 	lvds_tx_dis();
 	P3DIR |= SRIC_TXEN;
 }

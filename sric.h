@@ -29,9 +29,6 @@ enum {
 /* The number of bytes in the header and footer of a SRIC frame */
 #define SRIC_OVERHEAD (SRIC_HEADER_SIZE + 2)
 
-/* Our SRIC address */
-#define SRIC_ADDRESS 1
-
 #define sric_addr_set_ack(x) (x | 0x80)
 #define sric_addr_is_ack(x) ( x & 0x80 )
 #define sric_frame_is_ack(buf) ( sric_addr_is_ack(buf[SRIC_DEST]) )
@@ -48,6 +45,10 @@ typedef struct {
 	/* n to pass to the usart functions */
 	uint8_t usart_n;
 } sric_conf_t;
+
+/* Our SRIC address */
+/* 0 means we haven't had one assigned yet */
+extern uint8_t sric_addr;
 
 /* Initialise the internal goo */
 void sric_init( void );
