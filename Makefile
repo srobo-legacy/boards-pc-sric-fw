@@ -2,16 +2,24 @@ ARCH = msp430x169
 CC := msp430-gcc
 
 CFLAGS := -g -mmcu=${ARCH} -Wall -O3
+CFLAGS += -include `pwd`/config.h
 LDFLAGS :=
 
-O_FILES = main.o sric.o hostser.o crc16.o usart.o gw.o smps.o sric-mux.o
+O_FILES = main.o smps.o sric-mux.o
+SUBDIRS = drivers libsric
+
+LDFLAGS += -Ldrivers -ldrivers
+LDFLAGS += -Llibsric -lsric
 
 all: pcs
 
 include depend
 
-pcs: ${O_FILES}
-	${CC} -o $@ ${O_FILES} ${CFLAGS} ${LDFLAGS}
+pcs: ${O_FILES} ${SUBDIRS}
+	${CC} -o $@ ${O_FILES} ${LIB_FILES} ${CFLAGS} ${LDFLAGS}
+
+${SUBDIRS}:
+	$(MAKE) -C $@ CC=${CC} ARCH=${ARCH} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 depend: *.c
 	rm -f depend
@@ -22,8 +30,10 @@ depend: *.c
 gw-fsm.pdf: gw-fsm.dot
 	dot -Tpdf gw-fsm.dot -o gw-fsm.pdf
 
-.PHONY: clean
+.PHONY: clean ${SUBDIRS}
 
 clean:
 	-rm -f pcs depend *.o
-
+	for d in ${SUBDIRS} ; do\
+		${MAKE} -C $$d clean ; \
+	done ;
