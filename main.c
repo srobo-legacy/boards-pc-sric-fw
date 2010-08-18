@@ -21,7 +21,7 @@
 #include "drivers/usart.h"
 #include "drivers/xt2.h"
 #include "libsric/hostser.h"
-#include "libsric/gw.h"
+#include "libsric/sric-gw.h"
 #include "libsric/sric.h"
 #include "smps.h"
 #include "sric-mux.h"
@@ -64,8 +64,8 @@ const usart_t usart_config[2] = {
 const hostser_conf_t hostser_conf = {
 	.usart_tx_start = usart_tx_start,
 	.usart_tx_start_n = 1,
-	.rx_cb = gw_hostser_rx,
-	.tx_done_cb = gw_hostser_tx_done,
+	.rx_cb = sric_gw_hostser_rx,
+	.tx_done_cb = sric_gw_hostser_tx_done,
 };
 
 const sric_conf_t sric_conf = {
