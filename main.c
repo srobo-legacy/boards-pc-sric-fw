@@ -19,6 +19,7 @@
 #include "leds.h"
 #include "fields.h"
 #include "drivers/usart.h"
+#include "drivers/xt2.h"
 #include "libsric/hostser.h"
 #include "libsric/gw.h"
 #include "libsric/sric.h"
@@ -73,30 +74,6 @@ const sric_conf_t sric_conf = {
 	.usart_n = 0,
 };
 
-/* Kick the XT2 crystal until it starts oscillating */
-void xt2_boot( void )
-{
-	/* Use red LED to diagnose oscillator fault */
-	led_red(1);
-
-	do {
-		uint8_t i;
-
-		/* Switch the XT2 osc on */
-		BCSCTL1 &= ~XT2OFF;
-		field_set( BCSCTL2, SELM_XT2CLK, SELM_3 );
-
-		/* Clear flag to allow oscillator test */
-		IFG1 &= ~OFIFG;
-
-		/* Wait at least 50µs (currently on ~800kHz DCO) */
-		for( i=0; i<40; i++ )
-			nop();
-	} while( IFG1 & OFIFG );
-
-	led_red(0);
-}
-
 void init( void )
 {
 	/* Tristate all pins */
@@ -105,7 +82,11 @@ void init( void )
 	leds_init();
 
 	/* Source MCLK from XT2 */
-	xt2_boot();
+	/* Use the red LED to indicate oscillator fault */
+	led_red(1);
+	xt2_start();
+	led_red(0);
+
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
 
