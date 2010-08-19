@@ -5,7 +5,7 @@ CFLAGS := -g -mmcu=${ARCH} -Wall -O3
 CFLAGS += -include `pwd`/config.h
 LDFLAGS :=
 
-O_FILES = main.o smps.o sric-mux.o
+O_FILES = main.o smps.o sric-mux.o cmds.o
 SUBDIRS = drivers libsric
 
 LDFLAGS += -Ldrivers -ldrivers
