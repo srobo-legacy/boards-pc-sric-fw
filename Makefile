@@ -1,7 +1,7 @@
 ARCH = msp430x169
 CC := msp430-gcc
 
-CFLAGS := -g -mmcu=${ARCH} -Wall -O3
+CFLAGS := -g -mmcu=${ARCH} -Wall -Werror -O3 -std=gnu99
 CFLAGS += -include `pwd`/config.h
 LDFLAGS :=
 
