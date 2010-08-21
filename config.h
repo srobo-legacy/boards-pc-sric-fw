@@ -6,4 +6,9 @@
    the token. */
 #define SRIC_DIRECTOR 1
 
+/* Dummy scheduler config to appease the build
+ (the scheduler isn't yet used by this project) */
+#define SCHED_QUEUE_SIZE 1
+#define SCHED_DIV 0
+
 #endif	/* __CONFIG_H */
