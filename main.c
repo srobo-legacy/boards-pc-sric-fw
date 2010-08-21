@@ -23,6 +23,7 @@
 #include "libsric/hostser.h"
 #include "libsric/sric-gw.h"
 #include "libsric/sric.h"
+#include "libsric/sric-client.h"
 #include "smps.h"
 #include "sric-mux.h"
 #include "config.h"
@@ -64,14 +65,32 @@ const usart_t usart_config[2] = {
 const hostser_conf_t hostser_conf = {
 	.usart_tx_start = usart_tx_start,
 	.usart_tx_start_n = 1,
+
+#if SRIC_DIRECTOR
+	/* Send received frames to the gateway */
 	.rx_cb = sric_gw_hostser_rx,
+	/* Notify the gateway when transmission is complete */
 	.tx_done_cb = sric_gw_hostser_tx_done,
+#else
+	.rx_cb = NULL,
+	.tx_done_cb = NULL,
+#endif
 };
 
 const sric_conf_t sric_conf = {
 	.usart_tx_start = usart_tx_start,
 	.usart_rx_gate = usart_rx_gate,
 	.usart_n = 0,
+
+#if SRIC_DIRECTOR
+	/* Send received frames to the gateway */
+	.rx_cmd = sric_gw_sric_rxcmd,
+	.rx_resp = sric_gw_sric_rxresp,
+#else
+	/* We're a simple client */
+	.rx_cmd = sric_client_rx,
+	.rx_resp = NULL,
+#endif
 };
 
 void init( void )
@@ -97,7 +116,10 @@ void init( void )
 
 	smps_init();
 	usart_init();
-	hostser_init();
+
+	if( SRIC_DIRECTOR )
+		hostser_init();
+
 	sric_init();
 	eint();
 }
