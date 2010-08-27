@@ -87,10 +87,12 @@ const sric_conf_t sric_conf = {
 	/* Send received frames to the gateway */
 	.rx_cmd = sric_gw_sric_rxcmd,
 	.rx_resp = sric_gw_sric_rxresp,
+	.error = sric_gw_sric_err,
 #else
 	/* We're a simple client */
 	.rx_cmd = sric_client_rx,
 	.rx_resp = NULL,
+	.error = NULL,
 #endif
 };
 
