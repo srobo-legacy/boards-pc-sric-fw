@@ -15,6 +15,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #ifndef __LEDS_H
 #define __LEDS_H
+#include <io.h>
 
 #define LED0 (1<<3)
 #define LED1 (1<<4)
