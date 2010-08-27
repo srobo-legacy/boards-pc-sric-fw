@@ -14,8 +14,28 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "cmds.h"
+#include <string.h>
+
+static uint8_t test_a( const sric_if_t *iface );
+static uint8_t test_b( const sric_if_t *iface );
 
 const sric_cmd_t sric_commands[] = {
+	{ test_a },
+	{ test_b },
 };
 
-const uint8_t sric_cmd_num = 0;
+const uint8_t sric_cmd_num = sizeof(sric_commands) / sizeof(const sric_cmd_t);
+
+static uint8_t test_a( const sric_if_t *iface )
+{
+	memcpy( iface->txbuf + SRIC_DATA, "hello", 5 );
+
+	return 5;
+}
+
+static uint8_t test_b( const sric_if_t *iface )
+{
+	memcpy( iface->txbuf + SRIC_DATA, "world", 5 );
+
+	return 5;
+}
