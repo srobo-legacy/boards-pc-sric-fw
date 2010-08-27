@@ -6,9 +6,9 @@
    the token. */
 #define SRIC_DIRECTOR 1
 
-/* Dummy scheduler config to appease the build
- (the scheduler isn't yet used by this project) */
-#define SCHED_QUEUE_SIZE 1
-#define SCHED_DIV 0
+#define SCHED_TIMER_B 1
+#define SCHED_QUEUE_SIZE 4
+/* Divide SMCLK to give 1kHz timer */
+#define SCHED_DIV 8000
 
 #endif	/* __CONFIG_H */

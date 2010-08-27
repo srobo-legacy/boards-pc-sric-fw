@@ -27,6 +27,7 @@
 #include "smps.h"
 #include "sric-mux.h"
 #include "config.h"
+#include "drivers/sched.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -115,6 +116,7 @@ void init( void )
 		sric_mux_pass();
 
 	smps_init();
+	sched_init();
 	usart_init();
 
 	if( SRIC_DIRECTOR )
