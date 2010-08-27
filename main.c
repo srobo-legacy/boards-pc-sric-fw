@@ -110,17 +110,15 @@ void init( void )
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
 
-	if( SRIC_DIRECTOR )
-		sric_mux_master();
-	else
-		sric_mux_pass();
-
 	smps_init();
 	sched_init();
 	usart_init();
 
-	if( SRIC_DIRECTOR )
+	if( SRIC_DIRECTOR ) {
+		sric_mux_master();
 		hostser_init();
+	} else
+		sric_mux_pass();
 
 	sric_init();
 	eint();
