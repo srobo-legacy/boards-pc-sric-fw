@@ -28,6 +28,7 @@
 #include "sric-mux.h"
 #include "config.h"
 #include "drivers/sched.h"
+#include "libsric/token-dummy.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -88,12 +89,18 @@ const sric_conf_t sric_conf = {
 	.rx_cmd = sric_gw_sric_rxcmd,
 	.rx_resp = sric_gw_sric_rxresp,
 	.error = sric_gw_sric_err,
+	.token_drv = &token_dummy_drv,
 #else
 	/* We're a simple client */
 	.rx_cmd = sric_client_rx,
 	.rx_resp = NULL,
 	.error = NULL,
+	.token_drv = &token_dummy_drv,
 #endif
+};
+
+const token_dummy_conf_t token_dummy_conf = {
+	.haz_token = sric_haz_token,
 };
 
 void init( void )
@@ -118,9 +125,12 @@ void init( void )
 
 	if( SRIC_DIRECTOR ) {
 		sric_mux_master();
+		token_dummy_init(300);
 		hostser_init();
-	} else
+	} else {
+		token_dummy_init(50);
 		sric_mux_pass();
+	}
 
 	sric_init();
 	eint();
