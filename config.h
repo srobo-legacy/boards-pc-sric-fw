@@ -11,4 +11,7 @@
 /* Divide SMCLK to give 1kHz timer */
 #define SCHED_DIV 8000
 
+/* Number of pin interrupt entries */
+#define PININT_NCONF 4
+
 #endif	/* __CONFIG_H */

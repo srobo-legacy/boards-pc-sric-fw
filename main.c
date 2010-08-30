@@ -29,6 +29,7 @@
 #include "config.h"
 #include "drivers/sched.h"
 #include "libsric/token-dummy.h"
+#include "drivers/pinint.h"
 
 const usart_t usart_config[2] = {
 	{
@@ -119,6 +120,7 @@ void init( void )
 	/* Source SMCLK from XT2 */
 	BCSCTL2 |= SELS;
 
+	pinint_init();
 	smps_init();
 	sched_init();
 	usart_init();
