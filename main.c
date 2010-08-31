@@ -28,8 +28,13 @@
 #include "sric-mux.h"
 #include "config.h"
 #include "drivers/sched.h"
-#include "libsric/token-dummy.h"
 #include "drivers/pinint.h"
+
+#if SRIC_DIRECTOR
+#include "libsric/token-dir.h"
+#else
+#include "libsric/token-msp.h"
+#endif
 
 const usart_t usart_config[2] = {
 	{
@@ -90,19 +95,41 @@ const sric_conf_t sric_conf = {
 	.rx_cmd = sric_gw_sric_rxcmd,
 	.rx_resp = sric_gw_sric_rxresp,
 	.error = sric_gw_sric_err,
-	.token_drv = &token_dummy_drv,
+	.token_drv = &token_dir_drv,
 #else
 	/* We're a simple client */
 	.rx_cmd = sric_client_rx,
 	.rx_resp = NULL,
 	.error = NULL,
-	.token_drv = &token_dummy_drv,
+	.token_drv = &token_msp_drv,
 #endif
 };
 
-const token_dummy_conf_t token_dummy_conf = {
+#if SRIC_DIRECTOR
+const token_dir_conf_t token_dir_conf = {
 	.haz_token = sric_haz_token,
+
+	.to_port = &P3OUT,
+	.to_dir = &P3DIR,
+	.to_mask = (1<<1),
+
+	.ti_port = &P1OUT,
+	.ti_dir = &P1DIR,
+	.ti_mask = (1<<0),
 };
+#else
+const token_msp_conf_t token_msp_conf = {
+	.haz_token = sric_haz_token,
+
+	.to_port = &P3OUT,
+	.to_dir = &P3DIR,
+	.to_mask = (1<<1),
+
+	.ti_port = &P1OUT,
+	.ti_dir = &P1DIR,
+	.ti_mask = (1<<0),
+};
+#endif
 
 void init( void )
 {
@@ -125,14 +152,14 @@ void init( void )
 	sched_init();
 	usart_init();
 
-	if( SRIC_DIRECTOR ) {
+#if SRIC_DIRECTOR
 		sric_mux_master();
-		token_dummy_init(300);
+		token_dir_init();
 		hostser_init();
-	} else {
-		token_dummy_init(50);
+#else
+		token_msp_init();
 		sric_mux_pass();
-	}
+#endif
 
 	sric_init();
 	eint();
