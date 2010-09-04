@@ -117,7 +117,7 @@ const token_dir_conf_t token_dir_conf = {
 	.to_dir = &P3DIR,
 	.to_mask = (1<<1),
 
-	.ti_port = &P1OUT,
+	.ti_port = &P1IN,
 	.ti_dir = &P1DIR,
 	.ti_mask = (1<<0),
 };
@@ -129,7 +129,7 @@ const token_msp_conf_t token_msp_conf = {
 	.to_dir = &P3DIR,
 	.to_mask = (1<<1),
 
-	.ti_port = &P1OUT,
+	.ti_port = &P1IN,
 	.ti_dir = &P1DIR,
 	.ti_mask = (1<<0),
 };
