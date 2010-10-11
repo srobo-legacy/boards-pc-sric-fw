@@ -135,6 +135,12 @@ const token_msp_conf_t token_msp_conf = {
 };
 #endif
 
+#if !SRIC_DIRECTOR
+const sric_client_conf_t sric_client_conf = {
+	.devclass = SRIC_CLASS_PCSRIC,
+};
+#endif
+
 void init( void )
 {
 	/* Tristate all pins */
@@ -160,6 +166,7 @@ void init( void )
 		sric_mux_master();
 		token_dir_init();
 		hostser_init();
+		sric_gw_init();
 #else
 		token_msp_init();
 		sric_mux_pass();
@@ -167,6 +174,8 @@ void init( void )
 
 	sric_init();
 	eint();
+
+	sric_gw_init_bus();
 }
 
 int main( void )
