@@ -6,6 +6,10 @@
    the token. */
 #define SRIC_DIRECTOR 1
 
+/* SRIC_PROMISC enables/disables promiscuous mode, in which the
+   interface calls a function for every frame that's received */
+#define SRIC_PROMISC 1
+
 #define SCHED_TIMER_B 1
 #define SCHED_QUEUE_SIZE 4
 /* Divide SMCLK to give 1kHz timer */

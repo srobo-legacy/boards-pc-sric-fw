@@ -74,15 +74,10 @@ const hostser_conf_t hostser_conf = {
 	.usart_tx_start = usart_tx_start,
 	.usart_tx_start_n = 1,
 
-#if SRIC_DIRECTOR
 	/* Send received frames to the gateway */
 	.rx_cb = sric_gw_hostser_rx,
 	/* Notify the gateway when transmission is complete */
 	.tx_done_cb = sric_gw_hostser_tx_done,
-#else
-	.rx_cb = NULL,
-	.tx_done_cb = NULL,
-#endif
 };
 
 const sric_conf_t sric_conf = {
@@ -90,22 +85,22 @@ const sric_conf_t sric_conf = {
 	.usart_rx_gate = usart_rx_gate,
 	.usart_n = 0,
 
+#if SRIC_DIRECTOR
+	.token_drv = &token_dir_drv,
+#else
+	.token_drv = &token_msp_drv,
+#endif
+
 	.txen_dir = &P3DIR,
 	.txen_port = &P3OUT,
 	.txen_mask = (1<<0),
 
-#if SRIC_DIRECTOR
-	/* Send received frames to the gateway */
-	.rx_cmd = sric_gw_sric_rxcmd,
-	.rx_resp = sric_gw_sric_rxresp,
-	.error = sric_gw_sric_err,
-	.token_drv = &token_dir_drv,
-#else
-	/* We're a simple client */
 	.rx_cmd = sric_client_rx,
-	.rx_resp = NULL,
+	.rx_resp = sric_gw_sric_rx_resp,
 	.error = NULL,
-	.token_drv = &token_msp_drv,
+
+#if SRIC_PROMISC
+	.promisc_rx = sric_gw_sric_promisc_rx,
 #endif
 };
 
@@ -135,11 +130,9 @@ const token_msp_conf_t token_msp_conf = {
 };
 #endif
 
-#if !SRIC_DIRECTOR
 const sric_client_conf_t sric_client_conf = {
 	.devclass = SRIC_CLASS_PCSRIC,
 };
-#endif
 
 void init( void )
 {
@@ -163,19 +156,18 @@ void init( void )
 	usart_init();
 
 #if SRIC_DIRECTOR
-		sric_mux_master();
-		token_dir_init();
-		hostser_init();
-		sric_gw_init();
+	sric_mux_master();
+	token_dir_init();
 #else
-		token_msp_init();
-		sric_mux_pass();
+	token_msp_init();
+	sric_mux_pass();
 #endif
+
+	hostser_init();
+	sric_gw_init();
 
 	sric_init();
 	eint();
-
-	sric_gw_init_bus();
 }
 
 int main( void )
