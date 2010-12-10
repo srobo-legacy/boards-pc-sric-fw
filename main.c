@@ -180,6 +180,8 @@ int main( void )
 
 	while(1)
 	{
+		sric_poll();
+		hostser_poll();
 		nop();
 	}
 }
